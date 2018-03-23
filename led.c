@@ -2,7 +2,7 @@
 #include <util/delay.h>
 
 #define BLINK_DELAY_MS 1000
-#define TEST_PIN 9
+#define TEST_PIN 8
 
 int *pinout[] = {(int *)DDD0, (int *)DDD1, (int *)DDD2, (int *)DDD3,
                  (int *)DDD4, (int *)DDD5, (int *)DDD6, (int *)DDD7,
