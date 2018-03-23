@@ -2,83 +2,60 @@
 #include <util/delay.h>
 
 #define BLINK_DELAY_MS 1000
+#define TEST_PIN 9
 
-int pinout[] = {DDD0, DDD1, DDD2, DDD3, DDD4, DDD5, DDD6,
-                DDD7, DDB0, DDB1, DDB2, DDB3, DDB4, DDB5};
+int *pinout[] = {(int *)DDD0, (int *)DDD1, (int *)DDD2, (int *)DDD3,
+                 (int *)DDD4, (int *)DDD5, (int *)DDD6, (int *)DDD7,
+                 (int *)DDB0, (int *)DDB1, (int *)DDB2, (int *)DDB3,
+                 (int *)DDB4, (int *)DDB5};
 
-int pinD[] = {PORTD0, PORTD1, PORTD2, PORTD3, PORTD4, PORTD5, PORTD6,
-              PORTD7, PORTB0, PORTB1, PORTB2, PORTB3, PORTB4, PORTB5};
+int *pinD[] = {(int *)PORTD0, (int *)PORTD1, (int *)PORTD2, (int *)PORTD3,
+               (int *)PORTD4, (int *)PORTD5, (int *)PORTD6, (int *)PORTD7,
+               (int *)PORTB0, (int *)PORTB1, (int *)PORTB2, (int *)PORTB3,
+               (int *)PORTB4, (int *)PORTB5};
 
 // int pinA[] = {PORTC0, PORTC1, PORTC2, PORTC3, PORTC4, PORTC5};
 
-int getPort(int pin) {
+int *getPort(int pin) {
   if (pin <= 7) {
-    return PORTD;
+    return (int *)&PORTD;
   } else {
-    return PORTB;
+    return (int *)&PORTB;
   }
 }
 
-int getDDPort(int pin) {
+int *getDDPort(int pin) {
   if (pin <= 7) {
-    return DDRD;
+    return (int *)&DDRD;
   } else {
-    return DDRB;
+    return (int *)&DDRB;
   }
 }
 
 void setPin(int pin, int state) {
-  int port = getDDPort(pin);
+  int *port = getDDPort(pin);
   if (!state) {
-    port |= _BV(pinout[pin]);
+    *port |= _BV(*pinout[pin]);
   } else {
-    port &= ~_BV(pinout[pin]);
+    *port &= ~_BV(*pinout[pin]);
   }
-  // return port;
 }
 
 void pinOn(int pin) {
-  int puerto = getPort(pin);
-  puerto |= _BV(pinD[pin]);
-  // return puerto;
+  int *puerto = getPort(pin);
+  *puerto |= _BV(*pinD[pin]);
 }
 
 void pinOff(int pin) {
-  int puerto = getPort(pin);
-  puerto &= ~_BV(pinD[pin]);
-  // return puerto;
+  int *puerto = getPort(pin);
+  *puerto &= ~_BV(*pinD[pin]);
 }
 
 int main(void) {
-  /* set pin 5 of PORTB for output*/
-  DDRD |= _BV(DDD7);
-  DDRD |= _BV(pinout[2]);
-  setPin(8, 0);
-  setPin(12, 1);
-  // int pines[] = {2, 8, 5, 7, 12};
-  // for (int i = 0; i < 5; i++) {
-  //   setPin(pines[i], 0);
-  // }
-
-  while (1) {
-    /* set pin 5 high to turn led on */
-    PORTD |= _BV(pinD[7]);
-    PORTD |= _BV(pinD[8]);
-    pinOn(2);
-    pinOn(12);
-    // for (int i = 0; i < 5; i++) {
-    //   pinOn(pines[i]);
-    // }
-    _delay_ms(BLINK_DELAY_MS);
-
-    /* set pin 5 low to turn led off */
-    PORTD &= ~_BV(pinD[7]);
-    PORTD &= ~_BV(pinD[8]);
-    pinOff(2);
-    pinOff(12);
-    // for (int i = 0; i < 5; i++) {
-    //   pinOff(pines[i]);
-    // }
-    _delay_ms(BLINK_DELAY_MS);
-  }
+  setPin(TEST_PIN, 0);
+  pinOn(TEST_PIN);
+  _delay_ms(BLINK_DELAY_MS);
+  pinOff(TEST_PIN);
+  _delay_ms(BLINK_DELAY_MS);
+  pinOn(TEST_PIN);
 }
