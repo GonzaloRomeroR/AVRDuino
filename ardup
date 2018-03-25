@@ -4,8 +4,10 @@ avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/led.o led.c
 echo "Compiled led.c"
 avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/core.o ./lib/easyavr/core.c
 echo "Compiled ./lib/easyavr/core.c"
+avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/A4988.o ./lib/easyavr/A4988.c
+echo "Compiled ./lib/easyavr/A4988.c"
 
-avr-gcc -mmcu=atmega328p ./build/led.o ./build/core.o -o ./build/led
+avr-gcc -mmcu=atmega328p ./build/led.o ./build/core.o ./build/A4988.o -o ./build/led
 echo "linked .o files"
 avr-objcopy -O ihex -R .eeprom ./build/led ./build/led.hex
 echo "converted linked output to .hex"
