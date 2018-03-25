@@ -11,6 +11,12 @@ A4988 *newPololu(int dir, int step, int enable, int MS1, int MS2, int MS3,
   drive->MS3 = MS3;
   drive->degrees_per_step = degrees_per_step;
   drive->RPM = RPM;
+  setPin(dir, OUTPUT);
+  setPin(step, OUTPUT);
+  setPin(enable, OUTPUT);
+  setPin(MS1, OUTPUT);
+  setPin(MS2, OUTPUT);
+  setPin(MS3, OUTPUT);
   return drive;
 }
 
@@ -25,21 +31,26 @@ A4988 *newPololuFA(DriveArray array) {
   drive->degrees_per_step = array[6];
 
   for (uint8_t i = 0; i < 6; i++) {
-    /* code */
-    setPin((int)array, OUTPUT);
+    setPin((int)array[i], OUTPUT);
   }
 
   return drive;
 }
 
-void rotateNSteps(int n, A4988 *drive) {
+void setSpeed(int speed, pololu *drive) { drive->RPM = speed; };
+void rotateNSteps(int n, A4988 *drive, int dir) {
+  pinOn(drive->enable);
+  if (dir) {
+    pinOn(drive->dir);
+  } else {
+    pinOff(drive->dir);
+  }
   int delay = 60 / drive->RPM;
   for (uint8_t i = 0; i < n; i++) {
     pinOn(drive->step);
-    // _delay_ms(delay / 2);
-    _delay_ms(400);
+    _delay_ms(RPM_DELAY);
     pinOff(drive->step);
-    _delay_ms(400);
-    // _delay_ms(delay / 2);
+    _delay_ms(RPM_DELAY);
   }
+  pinOff(drive->enable);
 }
