@@ -15,8 +15,6 @@ ISR(TIMER0_OVF_vect, ISR_NOBLOCK) {
   for (uint8_t i = 0; i < NUM_STEPPERS; i++) {
     count[i]++;
   }
-  // count[0]++;
-  // count[1]++;
   for (uint8_t i = 0; i < NUM_STEPPERS; i++) {
     if (PAParray[i]->enabled) {
       delay = (60 / PAParray[i]->motor->RPM) * 61;

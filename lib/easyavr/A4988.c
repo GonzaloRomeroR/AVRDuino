@@ -1,4 +1,6 @@
 #include "A4988.h"
+// #define MANSET
+// #define SETPOL
 
 #ifdef MANSET
 void setPololu(pololu *drive, int dir, int step, int enable, int MS1, int MS2,
@@ -86,5 +88,4 @@ void rotateNSteps(int n, STEPPER *drive, int dir) {
   } else {
     pinOff(drive->motor->dir);
   }
-  // pinOff(drive->motor->enable);
 }
