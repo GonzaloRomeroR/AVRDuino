@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+# killall picocom
+# sleep 1
+
 avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/led.o led.c
 echo "Compiled led.c"
 avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/core.o ./lib/easyavr/core.c
@@ -8,6 +11,9 @@ avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/A4988.o ./lib/easy
 echo "Compiled ./lib/easyavr/A4988.c"
 avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/A4988_interrups.o ./lib/easyavr/A4988_interrups.c
 echo "Compiled ./lib/easyavr/A4988_interrups.c"
+
+# avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/uart.o ./lib/thrdparty/uart.c
+echo "Compiled ./lib/thrdparty/uart.c"
 
 avr-gcc -mmcu=atmega328p ./build/led.o ./build/core.o ./build/A4988.o ./build/A4988_interrups.o -o ./build/led
 echo "linked .o files"

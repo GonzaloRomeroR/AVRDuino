@@ -2,6 +2,8 @@
 #include "./lib/easyavr/A4988_interrups.h"
 #include "./lib/easyavr/core.h"
 
+#include "./lib/thrdparty/uart.h"
+
 #define FALSE 0
 #define TRUE 1
 #define NUM_STEPPERS 4
@@ -9,9 +11,13 @@
 volatile int count[NUM_STEPPERS];
 volatile int delay;
 
+// char *dialog[] = {"Stepper 1 on the run\n\r", "Stepper 2 on the run\n\r",
+// "Stepper 3 on the run\n\r", "Stepper 4 on the run\n\r"};
+
 STEPPER *PAParray[NUM_STEPPERS];
 
 ISR(TIMER0_OVF_vect, ISR_NOBLOCK) {
+
   for (uint8_t i = 0; i < NUM_STEPPERS; i++) {
     count[i]++;
     if (PAParray[i]->enabled) {
@@ -22,6 +28,7 @@ ISR(TIMER0_OVF_vect, ISR_NOBLOCK) {
           if (count[i] >= delay) {
             PAParray[i]->motor->stepps--;
             pinOff(PAParray[i]->motor->step);
+            // uart_puts(dialog[i]);
             count[i] = 0;
             if (PAParray[i]->motor->stepps == 0) {
               PAParray[i]->enabled = FALSE;
@@ -35,8 +42,9 @@ ISR(TIMER0_OVF_vect, ISR_NOBLOCK) {
 }
 
 int main(void) {
+  // uart_setup();
   DriveArray STPArray1 = {2, 3, 4, 0, 0, 0, 1.8, 30};
-  DriveArray STPArray2 = {5, 6, 7, 0, 0, 0, 1.8, 30};
+  DriveArray STPArray2 = {5, 6, 7, 0, 0, 0, 1.8, 60};
   DriveArray STPArray3 = {8, 9, 10, 0, 0, 0, 1.8, 60};
   DriveArray STPArray4 = {11, 12, 13, 0, 0, 0, 1.8, 30};
 
@@ -70,13 +78,12 @@ int main(void) {
     count[i] = 0;
   }
 
-  rotateNSteps(5, &PAP1, FORWARD);
-  rotateNSteps(10, &PAP2, FORWARD);
+  rotateNSteps(10, &PAP1, FORWARD);
+  rotateNSteps(20, &PAP2, FORWARD);
   rotateNSteps(20, &PAP3, FORWARD);
   rotateNSteps(60, &PAP4, FORWARD);
 
-  setTimer0(T0_PRESCALER_1024);
-
+  setTimer0(T0_PRESCALER_256);
   // setSpeed(60, &PAP1);
   // setTimer0PS(T0_PRESCALER_64);
 
