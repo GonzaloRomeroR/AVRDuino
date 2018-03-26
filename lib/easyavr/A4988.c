@@ -1,5 +1,6 @@
 #include "A4988.h"
 
+#ifdef MANSET
 void setPololu(pololu *drive, int dir, int step, int enable, int MS1, int MS2,
                int MS3, double degrees_per_step, int RPM) {
   drive->dir = dir;
@@ -16,21 +17,6 @@ void setPololu(pololu *drive, int dir, int step, int enable, int MS1, int MS2,
   setPin(MS1, OUTPUT);
   setPin(MS2, OUTPUT);
   setPin(MS3, OUTPUT);
-}
-
-void setPololuFA(pololu *drive, DriveArray array) {
-  drive->dir = (int)array[0];
-  drive->step = (int)array[1];
-  drive->enable = (int)array[2];
-  drive->MS1 = (int)array[3];
-  drive->MS2 = (int)array[4];
-  drive->MS3 = (int)array[5];
-  drive->degrees_per_step = array[6];
-  drive->RPM = (int)array[7];
-
-  for (uint8_t i = 0; i < 6; i++) {
-    setPin((int)array[i], OUTPUT);
-  }
 }
 
 A4988 newPololu(int dir, int step, int enable, int MS1, int MS2, int MS3,
@@ -52,6 +38,24 @@ A4988 newPololu(int dir, int step, int enable, int MS1, int MS2, int MS3,
   setPin(MS3, OUTPUT);
   return drive;
 }
+#endif
+
+#ifdef SETPOL
+void setPololuFA(pololu *drive, DriveArray array) {
+  drive->dir = (int)array[0];
+  drive->step = (int)array[1];
+  drive->enable = (int)array[2];
+  drive->MS1 = (int)array[3];
+  drive->MS2 = (int)array[4];
+  drive->MS3 = (int)array[5];
+  drive->degrees_per_step = array[6];
+  drive->RPM = (int)array[7];
+
+  for (uint8_t i = 0; i < 6; i++) {
+    setPin((int)array[i], OUTPUT);
+  }
+}
+#endif
 
 A4988 newPololuFA(DriveArray array) {
   pololu drive;
@@ -62,15 +66,16 @@ A4988 newPololuFA(DriveArray array) {
   drive.MS2 = (int)array[4];
   drive.MS3 = (int)array[5];
   drive.degrees_per_step = array[6];
+  drive.RPM = (int)array[7];
 
-  for (uint8_t i = 0; i < 6; i++) {
+  for (uint8_t i = 0; i < 3; i++) {
     setPin((int)array[i], OUTPUT);
   }
 
   return drive;
 }
 
-void setSpeed(int speed, pololu *drive) { drive->RPM = speed; };
+void setSpeed(int speed, STEPPER *drive) { drive->motor->RPM = speed; };
 
 void rotateNSteps(int n, STEPPER *drive, int dir) {
   drive->motor->stepps = n;

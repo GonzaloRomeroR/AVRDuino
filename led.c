@@ -6,29 +6,28 @@
 #define TRUE 1
 #define NUM_STEPPERS 2
 
-volatile int count;
+volatile int count[2];
+volatile int delay;
 
-STEPPER *PAParray[4];
+STEPPER *PAParray[NUM_STEPPERS];
 
-ISR(TIMER0_OVF_vect) {
-  count++;
+ISR(TIMER0_OVF_vect, ISR_NOBLOCK) {
+  count[0]++;
+  count[1]++;
   for (uint8_t i = 0; i < NUM_STEPPERS; i++) {
     if (PAParray[i]->enabled) {
-
-      int delay = (60 / PAParray[i]->motor->RPM) * 61;
+      delay = (60 / PAParray[i]->motor->RPM) * 61;
       if (PAParray[i]->motor->stepps > 0) {
-        if (count >= delay / 2) {
+        if (count[i] >= delay / 2) {
           pinOn(PAParray[i]->motor->step);
-        }
-      }
-      if (count >= delay) {
-        if (PAParray[i]->motor->stepps > 0) {
-          PAParray[i]->motor->stepps--;
-          pinOff(PAParray[i]->motor->step);
-          count = 0;
-          if (PAParray[i]->motor->stepps == 0) {
-            PAParray[i]->enabled = FALSE;
-            pinOff(PAParray[i]->motor->enable);
+          if (count[i] >= delay) {
+            PAParray[i]->motor->stepps--;
+            pinOff(PAParray[i]->motor->step);
+            count[i] = 0;
+            if (PAParray[i]->motor->stepps == 0) {
+              PAParray[i]->enabled = FALSE;
+              pinOff(PAParray[i]->motor->enable);
+            }
           }
         }
       }
@@ -37,9 +36,8 @@ ISR(TIMER0_OVF_vect) {
 }
 
 int main(void) {
-
-  DriveArray STPArray1 = {2, 3, 4, 0, 0, 0, 1.8, 120};
-  DriveArray STPArray2 = {12, 11, 10, 0, 0, 0, 1.8, 200};
+  DriveArray STPArray1 = {2, 3, 4, 0, 0, 0, 1.8, 30};
+  DriveArray STPArray2 = {5, 6, 12, 0, 0, 0, 1.8, 60};
 
   pololu STP1 = newPololuFA(STPArray1);
   pololu STP2 = newPololuFA(STPArray2);
@@ -55,15 +53,18 @@ int main(void) {
   PAParray[0] = &PAP1;
   PAParray[1] = &PAP2;
 
-  setTimer0(T0_PRESCALER_1024);
-  count = 0;
+  for (uint8_t i = 0; i < NUM_STEPPERS; i++) {
+    count[i] = 0;
+  }
 
-  setSpeed(240, &STP1);
+  rotateNSteps(5, &PAP1, FORWARD);
+  rotateNSteps(10, &PAP2, FORWARD);
 
-  rotateNSteps(200, &PAP1, FORWARD);
-  rotateNSteps(200, &PAP2, FORWARD);
+  setTimer0(T0_PRESCALER_256);
+
+  // setSpeed(60, &PAP1);
+  // setTimer0PS(T0_PRESCALER_64);
 
   while (1) {
-    /* code */
   }
 }
