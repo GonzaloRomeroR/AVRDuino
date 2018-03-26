@@ -14,11 +14,9 @@ STEPPER *PAParray[NUM_STEPPERS];
 ISR(TIMER0_OVF_vect, ISR_NOBLOCK) {
   for (uint8_t i = 0; i < NUM_STEPPERS; i++) {
     count[i]++;
-  }
-  for (uint8_t i = 0; i < NUM_STEPPERS; i++) {
     if (PAParray[i]->enabled) {
-      delay = (60 / PAParray[i]->motor->RPM) * 61;
       if (PAParray[i]->motor->stepps > 0) {
+        delay = (60 / PAParray[i]->motor->RPM) * 61;
         if (count[i] >= delay / 2) {
           pinOn(PAParray[i]->motor->step);
           if (count[i] >= delay) {
@@ -77,7 +75,7 @@ int main(void) {
   rotateNSteps(20, &PAP3, FORWARD);
   rotateNSteps(60, &PAP4, FORWARD);
 
-  setTimer0(T0_PRESCALER_256);
+  setTimer0(T0_PRESCALER_1024);
 
   // setSpeed(60, &PAP1);
   // setTimer0PS(T0_PRESCALER_64);

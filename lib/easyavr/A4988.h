@@ -4,8 +4,9 @@
 #define BACKWARD 0
 #include "core.h"
 #include "A4988_interrups.h"
-#include <util/delay.h>
-#define RPM_DELAY 50
+
+// #define MANSET
+// #define SETPOL
 
 //A4988 driver struct and function declarations, you may use the custom pololu
 //type if you find it more convenient.
