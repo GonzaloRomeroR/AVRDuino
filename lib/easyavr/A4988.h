@@ -3,6 +3,7 @@
 #define FORWARD 1
 #define BACKWARD 0
 #include "core.h"
+#include "A4988_interrups.h"
 #include <util/delay.h>
 #define RPM_DELAY 50
 
@@ -18,10 +19,17 @@ typedef struct a4988 {
         int MS3;
         double degrees_per_step;
         int RPM;
+        int stepps;
 } A4988;
 
 typedef A4988 pololu;
 typedef double DriveArray[8];
+
+typedef struct stepper {
+  unsigned short int enabled;
+  A4988 *motor;
+}STEPPER;
+
 //set existing A4988 struct manually or from an existing DriveArray array.
 void setPololu(pololu *drive, int dir, int step, int enable, int MS1, int MS2,
                int MS3, double degrees_per_step, int RPM);
@@ -35,6 +43,6 @@ A4988 newPololu(int dir, int step, int enable, int MS1, int MS2, int MS3, double
 A4988 newPololuFA(DriveArray array);
 
 void setSpeed(int speed, pololu *drive);
-void rotateNSteps(int n, A4988 *drive, int dir);
+void rotateNSteps(int n, STEPPER *drive, int dir);
 
 #endif

@@ -47,3 +47,8 @@ void pinOff(int pin) {
   int *puerto = getPort(pin);
   *puerto &= ~_BV(pinD[pin]);
 }
+
+void togglePin(int pin) {
+  int *puerto = getPort(pin);
+  *puerto ^= _BV(pinD[pin]);
+}

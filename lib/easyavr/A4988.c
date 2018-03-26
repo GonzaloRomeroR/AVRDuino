@@ -72,20 +72,14 @@ A4988 newPololuFA(DriveArray array) {
 
 void setSpeed(int speed, pololu *drive) { drive->RPM = speed; };
 
-void rotateNSteps(int n, A4988 *drive, int dir) {
-  pinOn(drive->enable);
+void rotateNSteps(int n, STEPPER *drive, int dir) {
+  drive->motor->stepps = n;
+  pinOn(drive->motor->enable);
+  drive->enabled = TRUE;
   if (dir) {
-    pinOn(drive->dir);
+    pinOn(drive->motor->dir);
   } else {
-    pinOff(drive->dir);
+    pinOff(drive->motor->dir);
   }
-  int delay = 60 / drive->RPM;
-  for (uint8_t i = 0; i < n; i++) {
-    pinOn(drive->step);
-    // Reeplaces this with timers/interruptions
-    _delay_ms(RPM_DELAY);
-    pinOff(drive->step);
-    _delay_ms(RPM_DELAY);
-  }
-  pinOff(drive->enable);
+  // pinOff(drive->motor->enable);
 }
