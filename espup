@@ -1,0 +1,2 @@
+#!/bin/zsh
+ampy -p /dev/ttyUSB0 put ./ESP/boot.py
