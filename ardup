@@ -1,22 +1,21 @@
 #!/bin/zsh
 
-# killall picocom
-# sleep 1
-
-avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/led.o led.c
-echo "Compiled led.c"
-avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/core.o ./lib/easyavr/core.c
+avr-gcc -std=c11 -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/main.o main.c
+echo "Compiled main.c"
+avr-gcc -std=c11 -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/core.o ./lib/easyavr/core.c
 echo "Compiled ./lib/easyavr/core.c"
-avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/A4988.o ./lib/easyavr/A4988.c
+avr-gcc -std=c11 -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/A4988.o ./lib/easyavr/A4988.c
 echo "Compiled ./lib/easyavr/A4988.c"
-avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/A4988_interrups.o ./lib/easyavr/A4988_interrups.c
+avr-gcc -std=c11 -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/A4988_interrups.o ./lib/easyavr/A4988_interrups.c
 echo "Compiled ./lib/easyavr/A4988_interrups.c"
+avr-gcc -std=c11 -g -Wall -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/I2CSlave.o ./lib/easyavr/I2CSlave.c
+echo "Compiled ./lib/easyavr/I2CSlave.c"
+avr-gcc -std=c11 -g -Wall -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/UART.o ./lib/easyavr/UART.c
+echo "Compiled ./lib/easyavr/UART.c"
 
-# avr-gcc -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o ./build/uart.o ./lib/thrdparty/uart.c
-echo "Compiled ./lib/thrdparty/uart.c"
 
-avr-gcc -mmcu=atmega328p ./build/led.o ./build/core.o ./build/A4988.o ./build/A4988_interrups.o -o ./build/led
+avr-gcc -std=c11 -mmcu=atmega328p ./build/main.o ./build/core.o ./build/I2CSlave.o ./build/UART.o ./build/A4988.o ./build/A4988_interrups.o -o ./build/main
 echo "linked .o files"
-avr-objcopy -O ihex -R .eeprom ./build/led ./build/led.hex
+avr-objcopy -O ihex -R .eeprom ./build/main ./build/main.hex
 echo "converted linked output to .hex"
-avrdude -F -V -c arduino -p ATMEGA328P -P /dev/ttyACM0 -b 115200 -U flash:w:./build/led.hex
+avrdude -F -V -c arduino -p ATMEGA328P -P /dev/ttyACM0 -b 115200 -U flash:w:./build/main.hex
